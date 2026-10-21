@@ -1,0 +1,16 @@
+{
+  "name": "state-machine",
+  "version": "1.0.0",
+  "description": "Stateless, event-driven workflow rules engine",
+  "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "test": "node --test"
+  },
+  "dependencies": {
+    "ajv": "^8.17.1",
+    "json-rules-engine": "^7.3.1"
+  }
+}

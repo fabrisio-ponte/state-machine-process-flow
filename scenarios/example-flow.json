@@ -1,0 +1,76 @@
+{
+  "flowId": "example-flow",
+  "schema": {
+    "type": "object",
+    "required": ["claim"],
+    "properties": {
+      "claim": {
+        "type": "object",
+        "required": ["status"],
+        "properties": {
+          "status": { "type": "string" },
+          "amount": { "type": "number", "minimum": 0 }
+        },
+        "additionalProperties": true
+      }
+    },
+    "additionalProperties": true
+  },
+  "preconditions": ["always"],
+  "rules": [
+    {
+      "name": "approve-small-claim",
+      "priority": 10,
+      "conditions": {
+        "all": [
+          {
+            "fact": "payload",
+            "path": "$.claim.status",
+            "operator": "equal",
+            "value": "submitted"
+          },
+          {
+            "fact": "payload",
+            "path": "$.claim.amount",
+            "operator": "lessThanInclusive",
+            "value": 1000
+          }
+        ]
+      },
+      "event": {
+        "type": "TRANSITION_STATE",
+        "params": {
+          "to": "approved",
+          "reason": "Claim is within the automatic approval limit"
+        }
+      }
+    },
+    {
+      "name": "review-large-claim",
+      "priority": 5,
+      "conditions": {
+        "all": [
+          {
+            "fact": "payload",
+            "path": "$.claim.status",
+            "operator": "equal",
+            "value": "submitted"
+          },
+          {
+            "fact": "payload",
+            "path": "$.claim.amount",
+            "operator": "greaterThan",
+            "value": 1000
+          }
+        ]
+      },
+      "event": {
+        "type": "TRANSITION_STATE",
+        "params": {
+          "to": "manual_review",
+          "reason": "Claim exceeds the automatic approval limit"
+        }
+      }
+    }
+  ]
+}
